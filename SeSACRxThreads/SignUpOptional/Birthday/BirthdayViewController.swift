@@ -82,9 +82,12 @@ class BirthdayViewController: UIViewController {
     func bind() {
         
         nextButton.rx.tap
-            .bind { [weak self] _ in
-                print(self?.view.window)
-                self?.view.window?.rootViewController = SampleViewController()
+            .bind { _ in
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = scene.windows.first {
+                    window.rootViewController = SampleViewController()
+                    window.makeKeyAndVisible()
+                }
             }
             .disposed(by: disposeBag)
         
