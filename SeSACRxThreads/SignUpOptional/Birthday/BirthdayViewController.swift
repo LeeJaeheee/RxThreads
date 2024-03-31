@@ -7,6 +7,8 @@
  
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class BirthdayViewController: UIViewController {
     
@@ -36,7 +38,6 @@ class BirthdayViewController: UIViewController {
     
     let yearLabel: UILabel = {
        let label = UILabel()
-        label.text = "2023년"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -46,7 +47,6 @@ class BirthdayViewController: UIViewController {
     
     let monthLabel: UILabel = {
        let label = UILabel()
-        label.text = "33월"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -56,7 +56,6 @@ class BirthdayViewController: UIViewController {
     
     let dayLabel: UILabel = {
        let label = UILabel()
-        label.text = "99일"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -66,18 +65,77 @@ class BirthdayViewController: UIViewController {
   
     let nextButton = PointButton(title: "가입하기")
     
+    let viewModel = BirthdayViewModel()
+    
+    let disposeBag = DisposeBag()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = Color.white
         
         configureLayout()
-        
-        nextButton.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
+
+        bind()
     }
     
-    @objc func nextButtonClicked() {
-        print("가입완료")
+    func bind() {
+        
+        nextButton.rx.tap
+            .bind { [weak self] _ in
+                print(self?.view.window)
+                self?.view.window?.rootViewController = SampleViewController()
+            }
+            .disposed(by: disposeBag)
+        
+        viewModel.year
+            .map { "\($0)년" }
+            .bind(to: yearLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.month
+            .map { "\($0)월" }
+            .bind(to: monthLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.day
+            .map { "\($0)일" }
+            .bind(to: dayLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        let validAge = viewModel.birthday
+            .map { self.validAge(birthday: $0) }
+            .asDriver(onErrorJustReturn: false)
+
+        validAge
+            .map { $0 ? "가입 가능한 나이입니다." : "만 17세 이상만 가입 가능합니다." }
+            .drive(infoLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        validAge
+            .map { $0 ? .blue : .red }
+            .drive(infoLabel.rx.textColor)
+            .disposed(by: disposeBag)
+        
+        validAge
+            .map { $0 ? .blue : .lightGray }
+            .drive(nextButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+
+        validAge
+            .drive(nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        birthDayPicker.rx.date
+            .bind(to: viewModel.birthday)
+            .disposed(by: disposeBag)
+
+    }
+    
+    private func validAge(birthday: Date) -> Bool {
+        let calendar = Calendar.current
+        let age = calendar.dateComponents([.year], from: birthday, to: Date())
+        return age.year ?? 0 >= 17
     }
 
     
