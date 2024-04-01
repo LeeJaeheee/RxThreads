@@ -30,6 +30,9 @@
 		041280782AF1D14000972552 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041280772AF1D14000972552 /* Resource.swift */; };
 		D2A419D32BB9BB80005F6605 /* SampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A419D22BB9BB80005F6605 /* SampleViewController.swift */; };
 		D2A419D62BB9CB96005F6605 /* BirthdayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A419D52BB9CB96005F6605 /* BirthdayViewModel.swift */; };
+		D2A419DE2BBAB792005F6605 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A419DD2BBAB792005F6605 /* SearchViewController.swift */; };
+		D2A419E02BBAB79D005F6605 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A419DF2BBAB79D005F6605 /* SearchViewModel.swift */; };
+		D2A419E22BBAB7AF005F6605 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A419E12BBAB7AF005F6605 /* SearchTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +77,9 @@
 		041280772AF1D14000972552 /* Resource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
 		D2A419D22BB9BB80005F6605 /* SampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleViewController.swift; sourceTree = "<group>"; };
 		D2A419D52BB9CB96005F6605 /* BirthdayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthdayViewModel.swift; sourceTree = "<group>"; };
+		D2A419DD2BBAB792005F6605 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		D2A419DF2BBAB79D005F6605 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		D2A419E12BBAB7AF005F6605 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +133,7 @@
 		041280222AEF9BAB00972552 /* SeSACRxThreads */ = {
 			isa = PBXGroup;
 			children = (
+				D2A419DC2BBAB773005F6605 /* Search */,
 				041280532AEF9C1F00972552 /* SignUp */,
 				041280542AEF9C2600972552 /* SignIn */,
 				0412806D2AEFAD0F00972552 /* SignUpOptional */,
@@ -204,6 +211,16 @@
 				D2A419D52BB9CB96005F6605 /* BirthdayViewModel.swift */,
 			);
 			path = Birthday;
+			sourceTree = "<group>";
+		};
+		D2A419DC2BBAB773005F6605 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				D2A419DD2BBAB792005F6605 /* SearchViewController.swift */,
+				D2A419DF2BBAB79D005F6605 /* SearchViewModel.swift */,
+				D2A419E12BBAB7AF005F6605 /* SearchTableViewCell.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -354,10 +371,13 @@
 				D2A419D32BB9BB80005F6605 /* SampleViewController.swift in Sources */,
 				041280632AEFA0CE00972552 /* PointButton.swift in Sources */,
 				041280242AEF9BAB00972552 /* AppDelegate.swift in Sources */,
+				D2A419E22BBAB7AF005F6605 /* SearchTableViewCell.swift in Sources */,
 				D2A419D62BB9CB96005F6605 /* BirthdayViewModel.swift in Sources */,
+				D2A419DE2BBAB792005F6605 /* SearchViewController.swift in Sources */,
 				041280732AEFAD4B00972552 /* NicknameViewController.swift in Sources */,
 				0412806A2AEFA91E00972552 /* SignUpViewController.swift in Sources */,
 				041280712AEFAD3D00972552 /* PhoneViewController.swift in Sources */,
+				D2A419E02BBAB79D005F6605 /* SearchViewModel.swift in Sources */,
 				041280262AEF9BAB00972552 /* SceneDelegate.swift in Sources */,
 				041280582AEFA05300972552 /* SignInViewModel.swift in Sources */,
 			);
