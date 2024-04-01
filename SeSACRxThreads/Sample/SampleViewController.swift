@@ -16,9 +16,8 @@ class SampleViewController: UIViewController {
     private let addButton = PointButton(title: "추가")
     private let tableView = UITableView()
     
-    private let itemList = BehaviorSubject(value: ["Hue"])
-    
     private let disposeBag = DisposeBag()
+    private let viewModel = SampleViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +30,7 @@ class SampleViewController: UIViewController {
     }
     
     func bind() {
-        itemList
+        viewModel.items
             .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { row, element, cell in
                 cell.textLabel?.text = "\(element) @ row \(row)"
                 cell.accessoryType = .detailButton
@@ -51,12 +50,7 @@ class SampleViewController: UIViewController {
         
         tableView.rx
             .itemSelected
-            .bind(with: self) { owner, indexPath in
-                if var currentArray = try? owner.itemList.value() {
-                    currentArray.remove(at: indexPath.row)
-                    owner.itemList.onNext(currentArray)
-                }
-            }
+            .bind(to: viewModel.itemSelected)
             .disposed(by: disposeBag)
         
         tableView.rx
@@ -67,12 +61,8 @@ class SampleViewController: UIViewController {
             .disposed(by: disposeBag)
         
         addButton.rx.tap
-            .bind(with: self) { owner, _ in
-                if let currentArray = try? owner.itemList.value() {
-                    let updatedArray = currentArray + [owner.textField.text!]
-                    owner.itemList.onNext(updatedArray)
-                }
-            }
+            .withLatestFrom(textField.rx.text.orEmpty)
+            .bind(to: viewModel.inputText)
             .disposed(by: disposeBag)
     }
     
