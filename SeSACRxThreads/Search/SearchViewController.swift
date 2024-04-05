@@ -36,8 +36,15 @@ class SearchViewController: UIViewController {
     }
     
     func bind() {
-        viewModel.items
-            .bind(to: tableView.rx.items(cellIdentifier: SearchTableViewCell.identifier, cellType: SearchTableViewCell.self)) { row, element, cell in
+        let input = SearchViewModel.Input(
+            itemSelected: tableView.rx.itemSelected,
+            searchQuery: searchBar.rx.text,
+            searchButtonTap: searchBar.rx.searchButtonClicked
+        )
+        let output = viewModel.transform(input: input)
+        
+        output.items
+            .drive(tableView.rx.items(cellIdentifier: SearchTableViewCell.identifier, cellType: SearchTableViewCell.self)) { row, element, cell in
                 cell.configure(text: element)
                 cell.downloadButton.rx.tap
                     .bind(with: self) { owner, _ in
@@ -45,22 +52,6 @@ class SearchViewController: UIViewController {
                     }
                     .disposed(by: cell.disposeBag)
             }
-            .disposed(by: disposeBag)
-        
-        tableView.rx.itemSelected
-            .bind(to: viewModel.itemSelected)
-            .disposed(by: disposeBag)
-        
-        searchBar.rx.text.orEmpty
-            .debounce(.seconds(1), scheduler: MainScheduler.instance)
-            .distinctUntilChanged()
-            .bind(to: viewModel.searchQuery)
-            .disposed(by: disposeBag)
-        
-        searchBar.rx.searchButtonClicked
-            .withLatestFrom(searchBar.rx.text.orEmpty)
-            .distinctUntilChanged()
-            .bind(to: viewModel.searchQuery)
             .disposed(by: disposeBag)
         
     }

@@ -13,27 +13,51 @@ class SearchViewModel {
     
     let itemSelected = PublishSubject<IndexPath>()
     let searchQuery = PublishSubject<String>()
+    struct Input {
+        let itemSelected: ControlEvent<IndexPath>
+        let searchQuery: ControlProperty<String?>
+        let searchButtonTap: ControlEvent<Void>
+    }
     
-    var data = ["A", "B", "C", "AB", "D", "ABC", "BBB", "EC", "SA", "AAAB", "ED", "F", "G", "H"]
-    lazy var items = BehaviorSubject(value: data)
+    struct Output {
+        let items: Driver<[String]>
+    }
+    
+    private var data = ["A", "B", "C", "AB", "D", "ABC", "BBB", "EC", "SA", "AAAB", "ED", "F", "G", "H"]
+//    lazy var items = BehaviorSubject(value: data)
     
     let disposeBag = DisposeBag()
     
-    init() {
+    func transform(input: Input) -> Output {
+        let itemsSubject = BehaviorSubject(value: data)
         
-        itemSelected
+        input.itemSelected
             .subscribe(with: self) { owner, indexPath in
                 owner.data.remove(at: indexPath.row)
-                owner.items.onNext(owner.data)
+                itemsSubject.onNext(owner.data)
             }
             .disposed(by: disposeBag)
         
-        searchQuery
+        input.searchQuery.orEmpty
+            .debounce(.seconds(1), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
             .subscribe(with: self) { owner, value in
                 let result = value.isEmpty ? owner.data : owner.data.filter { $0.contains(value) }
-                owner.items.onNext(result)
+                itemsSubject.onNext(result)
             }
             .disposed(by: disposeBag)
+        
+        input.searchButtonTap
+            .withLatestFrom(input.searchQuery.orEmpty)
+            .distinctUntilChanged()
+            .subscribe(with: self) { owner, value in
+                let result = value.isEmpty ? owner.data : owner.data.filter { $0.contains(value) }
+                itemsSubject.onNext(result)
+            }
+            .disposed(by: disposeBag)
+            
+        
+        return Output(items: itemsSubject.asDriver(onErrorJustReturn: []))
     }
     
 }

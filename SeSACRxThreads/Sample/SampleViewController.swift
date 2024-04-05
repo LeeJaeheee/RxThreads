@@ -30,39 +30,23 @@ class SampleViewController: UIViewController {
     }
     
     func bind() {
-        viewModel.items
-            .bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { row, element, cell in
+        let input = SampleViewModel.Input(
+            itemSelected: tableView.rx.itemSelected,
+            inputText: addButton.rx.tap.withLatestFrom(textField.rx.text.orEmpty),
+            itemAccessoryButtonTap: tableView.rx.itemAccessoryButtonTapped)
+        let output = viewModel.transform(input: input)
+        
+        output.items
+            .drive(tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) { row, element, cell in
                 cell.textLabel?.text = "\(element) @ row \(row)"
                 cell.accessoryType = .detailButton
             }
             .disposed(by: disposeBag)
         
-        /*
-        Observable.zip(
-            tableView.rx.itemSelected,
-            tableView.rx.modelSelected(String.self)
-        )
-        .bind(with: self) { owner, value in
-            owner.showAlert(message: "\(value.0)번 \(value.1)를 선택했습니다!")
-        }
-        .disposed(by: disposeBag)
-         */
-        
-        tableView.rx
-            .itemSelected
-            .bind(to: viewModel.itemSelected)
-            .disposed(by: disposeBag)
-        
-        tableView.rx
-            .itemAccessoryButtonTapped
+        output.itemAccessoryButtonTap
             .bind(with: self) { owner, indexPath in
                 owner.showAlert(message: "\(indexPath)의 디테일 버튼을 클릭했습니다!")
             }
-            .disposed(by: disposeBag)
-        
-        addButton.rx.tap
-            .withLatestFrom(textField.rx.text.orEmpty)
-            .bind(to: viewModel.inputText)
             .disposed(by: disposeBag)
     }
     

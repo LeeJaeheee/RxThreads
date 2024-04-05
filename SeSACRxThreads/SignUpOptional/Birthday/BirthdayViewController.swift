@@ -80,8 +80,13 @@ class BirthdayViewController: UIViewController {
     }
     
     func bind() {
+        let input = BirthdayViewModel.Input(
+            birthday: birthDayPicker.rx.date,
+            nextButtonTap: nextButton.rx.tap
+        )
+        let output = viewModel.transform(input: input)
         
-        nextButton.rx.tap
+        output.nextButtonTap
             .bind { _ in
                 if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                    let window = scene.windows.first {
@@ -91,56 +96,38 @@ class BirthdayViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        viewModel.year
-            .map { "\($0)년" }
-            .bind(to: yearLabel.rx.text)
+        output.year
+            .drive(yearLabel.rx.text)
             .disposed(by: disposeBag)
         
-        viewModel.month
-            .map { "\($0)월" }
-            .bind(to: monthLabel.rx.text)
+        output.month
+            .drive(monthLabel.rx.text)
             .disposed(by: disposeBag)
         
-        viewModel.day
-            .map { "\($0)일" }
-            .bind(to: dayLabel.rx.text)
+        output.day
+            .drive(dayLabel.rx.text)
             .disposed(by: disposeBag)
         
-        let validAge = viewModel.birthday
-            .map { self.validAge(birthday: $0) }
-            .asDriver(onErrorJustReturn: false)
-
-        validAge
+        output.validAge
             .map { $0 ? "가입 가능한 나이입니다." : "만 17세 이상만 가입 가능합니다." }
             .drive(infoLabel.rx.text)
             .disposed(by: disposeBag)
 
-        validAge
+        output.validAge
             .map { $0 ? .blue : .red }
             .drive(infoLabel.rx.textColor)
             .disposed(by: disposeBag)
         
-        validAge
+        output.validAge
             .map { $0 ? .blue : .lightGray }
             .drive(nextButton.rx.backgroundColor)
             .disposed(by: disposeBag)
 
-        validAge
+        output.validAge
             .drive(nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
-        
-        birthDayPicker.rx.date
-            .bind(to: viewModel.birthday)
-            .disposed(by: disposeBag)
 
     }
-    
-    private func validAge(birthday: Date) -> Bool {
-        let calendar = Calendar.current
-        let age = calendar.dateComponents([.year], from: birthday, to: Date())
-        return age.year ?? 0 >= 17
-    }
-
     
     func configureLayout() {
         view.addSubview(infoLabel)
